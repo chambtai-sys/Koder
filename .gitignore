@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# C# build artifacts
+workspace/bin/
+workspace/obj/
+bin/
+obj/
+
+# Playwright verification outputs
+verification/
+/home/jules/verification/
+
+# Server and environment logs
+server_output.log
+.env
