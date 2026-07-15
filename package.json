@@ -1,0 +1,16 @@
+{
+  "name": "koder-ide",
+  "version": "1.0.0-beta",
+  "description": "Koder: A professional, web-based IDE for JavaScript and C#.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "author": "Perseu",
+  "license": "MIT"
+}
