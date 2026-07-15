@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koder IDE - Next-Gen JS & C# Editor</title>
+    <title>Koder IDE - Next-Gen JS, C# & Spark Editor</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +21,7 @@
         <header class="top-bar">
             <div class="brand">
                 <i class="fa-solid fa-code brand-icon"></i>
-                <span class="brand-name">Koder <span class="badge-beta">BETA</span></span>
+                <span class="brand-name">Koder <span class="badge-beta">BETA 1.1</span></span>
             </div>
 
             <div class="action-toolbar">
@@ -94,24 +94,70 @@
 ██║  ██║╚██████╔╝██████╔╝███████╗██║  ██║
 ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
                             </pre>
-                            <div class="beta-badge-glow">BETA v1.0.0</div>
-                            <p class="welcome-subtitle">A high-performance cloud IDE designed for JavaScript and C#.</p>
+                            <div class="beta-badge-glow">BETA v1.1</div>
+                            <p class="welcome-subtitle">A professional cloud IDE for JavaScript, C# and Spark.</p>
 
                             <div class="welcome-actions">
                                 <h3>Quick Start</h3>
                                 <div class="action-grid">
                                     <button onclick="openPredefinedFile('index.js')" class="action-card">
-                                        <i class="fa-brands fa-js-square js-color"></i>
-                                        <span>Open JavaScript template</span>
+                                        <div class="file-icon-badge js">JS</div>
+                                        <span>JavaScript workspace</span>
                                     </button>
                                     <button onclick="openPredefinedFile('program.cs')" class="action-card">
-                                        <i class="fa-solid fa-hashtag cs-color"></i>
-                                        <span>Open C# Console App</span>
+                                        <div class="file-icon-badge cs">C#</div>
+                                        <span>C# Console workspace</span>
                                     </button>
-                                    <button onclick="triggerNewFileCreation()" class="action-card">
-                                        <i class="fa-solid fa-plus-circle"></i>
-                                        <span>Create a new file</span>
+                                    <button onclick="openPredefinedFile('counter_app.spark')" class="action-card highlight-spark">
+                                        <div class="file-icon-badge spark">SP</div>
+                                        <span>Spark Micro App demo</span>
                                     </button>
+                                </div>
+                            </div>
+
+                            <!-- DYNAMIC HOW TO USE SPARK TAB PAGE -->
+                            <div class="spark-guide-section">
+                                <div class="guide-header" onclick="toggleSparkGuide()">
+                                    <h3><i class="fa-solid fa-graduation-cap"></i> Interactive Guide: How to Use Spark Language <i id="guide-chevron" class="fa-solid fa-chevron-down guide-toggle-icon"></i></h3>
+                                </div>
+                                <div id="spark-guide-body" class="guide-body hidden">
+                                    <div class="guide-intro">
+                                        <p><strong>Spark</strong> is a native, lightweight language engineered inside Koder specifically for modeling and rendering **Micro App Dashboards** instantaneously. It lets you define metadata, application logs, and visual states in seconds.</p>
+                                    </div>
+
+                                    <div class="guide-grid">
+                                        <div class="guide-col">
+                                            <h4><i class="fa-solid fa-terminal"></i> 1. Syntax Overview</h4>
+                                            <ul class="syntax-list">
+                                                <li><code>app "Title Name"</code> - Sets the micro app name</li>
+                                                <li><code>author "Your Name"</code> - Sets developer credit</li>
+                                                <li><code>set var = "value"</code> - Declares state variable</li>
+                                                <li><code>print "log line"</code> - Outputs message to log stream</li>
+                                                <li><code>show var</code> - Renders a state variable as a visual box</li>
+                                            </ul>
+                                        </div>
+                                        <div class="guide-col">
+                                            <h4><i class="fa-solid fa-code"></i> 2. Code Example</h4>
+                                            <pre class="code-sample">
+app "Health Monitor"
+author "Dr. Perseu"
+
+set heart_rate = "72 bpm"
+set battery_level = "98%"
+
+print "Syncing sensors..."
+print "Telemetry active"
+
+show heart_rate
+show battery_level
+                                            </pre>
+                                        </div>
+                                    </div>
+
+                                    <div class="guide-instructions">
+                                        <h4>🚀 Running Spark</h4>
+                                        <p>Simply create any file with the <code>.spark</code> extension (e.g., <code>todo.spark</code>), write Spark code, and click <strong>Run Code (Ctrl+Enter)</strong>. The output terminal will automatically compile and render your interactive Micro App dashboard!</p>
+                                    </div>
                                 </div>
                             </div>
 

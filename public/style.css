@@ -13,6 +13,7 @@
     --accent-green-hover: #2ea043;
     --accent-red: #da3633;
     --accent-orange: #d29922;
+    --accent-spark: #f35c00;
     --terminal-black: #0c0f12;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-mono: 'Fira Code', monospace;
@@ -73,14 +74,14 @@ body {
 
 .badge-beta {
     font-size: 0.65rem;
-    background: linear-gradient(135deg, var(--accent-blue), #892cdc);
+    background: linear-gradient(135deg, var(--accent-spark), #892cdc);
     color: #ffffff;
     padding: 2px 6px;
     border-radius: 4px;
     vertical-align: middle;
     margin-left: 4px;
     font-weight: 800;
-    box-shadow: 0 0 8px rgba(31, 111, 235, 0.5);
+    box-shadow: 0 0 8px rgba(243, 92, 0, 0.5);
     letter-spacing: 1px;
 }
 
@@ -301,10 +302,41 @@ body {
     background-color: var(--bg-lighter);
 }
 
+/* Custom File Icon Badges (Similar to JS Square) */
+.file-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.62rem;
+    font-weight: 850;
+    border-radius: 3px;
+    color: #0d1117;
+    line-height: 1;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.file-icon-badge.js {
+    background-color: #f7df1e;
+}
+
+.file-icon-badge.cs {
+    background-color: #178600;
+    color: #ffffff;
+}
+
+.file-icon-badge.spark {
+    background-color: var(--accent-spark);
+    color: #ffffff;
+    box-shadow: 0 0 5px rgba(243, 92, 0, 0.5);
+}
+
 /* File icons coloring */
 .tree-icon {
     font-size: 0.95rem;
-    width: 16px;
+    width: 18px;
     text-align: center;
 }
 
@@ -314,14 +346,6 @@ body {
 
 .tree-icon.fa-folder-open {
     color: var(--accent-orange);
-}
-
-.js-color {
-    color: #f7df1e !important;
-}
-
-.cs-color {
-    color: #178600 !important;
 }
 
 .generic-file-color {
@@ -462,19 +486,19 @@ body {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     line-height: 1.15;
-    color: var(--accent-blue-hover);
+    color: var(--accent-spark);
     white-space: pre;
     margin-bottom: 12px;
     font-weight: 700;
     display: inline-block;
     text-align: left;
-    text-shadow: 0 0 15px rgba(56, 139, 253, 0.25);
+    text-shadow: 0 0 15px rgba(243, 92, 0, 0.25);
     animation: glow-pulse 3s infinite alternate;
 }
 
 @keyframes glow-pulse {
-    0% { text-shadow: 0 0 10px rgba(56, 139, 253, 0.2); }
-    100% { text-shadow: 0 0 25px rgba(56, 139, 253, 0.45); }
+    0% { text-shadow: 0 0 10px rgba(243, 92, 0, 0.2); }
+    100% { text-shadow: 0 0 25px rgba(243, 92, 0, 0.45); }
 }
 
 .beta-badge-glow {
@@ -483,10 +507,10 @@ body {
     font-weight: 800;
     letter-spacing: 2px;
     color: #ffffff;
-    background: linear-gradient(90deg, #1f6feb, #892cdc);
+    background: linear-gradient(90deg, var(--accent-spark), #892cdc);
     padding: 4px 16px;
     border-radius: 20px;
-    box-shadow: 0 0 15px rgba(31, 111, 235, 0.4);
+    box-shadow: 0 0 15px rgba(243, 92, 0, 0.4);
     margin-bottom: 20px;
 }
 
@@ -498,11 +522,11 @@ body {
 }
 
 .welcome-actions {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     text-align: left;
 }
 
-.welcome-actions h3, .keyboard-shortcuts h3 {
+.welcome-actions h3, .keyboard-shortcuts h3, .spark-guide-section h3 {
     font-size: 0.95rem;
     font-weight: 600;
     color: #ffffff;
@@ -540,8 +564,129 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.action-card i {
-    font-size: 1.6rem;
+.action-card.highlight-spark:hover {
+    border-color: var(--accent-spark);
+    box-shadow: 0 4px 12px rgba(243, 92, 0, 0.25);
+}
+
+/* Spark Guide Section Styles */
+.spark-guide-section {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.guide-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.guide-header h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.15s ease;
+}
+
+.guide-header:hover h3 {
+    color: var(--accent-spark);
+}
+
+.guide-toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+    color: var(--text-muted);
+}
+
+.guide-body {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    animation: fade-slide 0.25s ease-out;
+}
+
+.guide-body.hidden {
+    display: none !important;
+}
+
+@keyframes fade-slide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.guide-intro {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin-bottom: 16px;
+}
+
+.guide-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+    .guide-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.guide-col h4 {
+    font-size: 0.85rem;
+    color: #ffffff;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.syntax-list {
+    list-style: none;
+    font-size: 0.8rem;
+}
+
+.syntax-list li {
+    margin-bottom: 6px;
+}
+
+.syntax-list code {
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    padding: 1px 4px;
+    border-radius: 4px;
+    color: var(--accent-spark);
+    font-family: var(--font-mono);
+}
+
+.code-sample {
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #a5d6ff;
+    overflow-x: auto;
+}
+
+.guide-instructions {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 12px;
+}
+
+.guide-instructions code {
+    background-color: var(--bg-light);
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: #ffffff;
 }
 
 /* Keyboard Shortcuts */

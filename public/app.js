@@ -25,10 +25,66 @@ const modalBtnCancel = document.getElementById('modal-btn-cancel');
 // Active modal context
 let modalCallback = null;
 
+// Toggle Spark Guide Accordion
+function toggleSparkGuide() {
+    const guideBody = document.getElementById('spark-guide-body');
+    const chevron = document.getElementById('guide-chevron');
+    if (guideBody.classList.contains('hidden')) {
+        guideBody.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        guideBody.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
 // Initialize Monaco Editor
 require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' } });
 require(['vs/editor/editor.main'], function () {
-    // Hide native container scrollbar and register custom theme if needed
+
+    // Register custom Spark programming language syntax in Monaco
+    monaco.languages.register({ id: 'spark' });
+    monaco.languages.setMonarchTokensProvider('spark', {
+        keywords: ['app', 'author', 'set', 'print', 'show'],
+        tokenizer: {
+            root: [
+                [/[a-zA-Z_]\w*/, {
+                    cases: {
+                        '@keywords': 'keyword',
+                        '@default': 'identifier'
+                    }
+                }],
+                [/"([^"\\]|\\.)*"/, 'string'],
+                [/'([^'\\]|\\.)*'/, 'string'],
+                [/\/\/.*$/, 'comment'],
+                [/#.*$/, 'comment'],
+                [/[0-9]+/, 'number'],
+                [/[{}()\[\]]/, 'delimiter'],
+                [/[=:+\-*/]/, 'operator']
+            ]
+        }
+    });
+
+    // Custom configuration for brackets & comments in Spark
+    monaco.languages.setLanguageConfiguration('spark', {
+        comments: {
+            lineComment: '//',
+        },
+        brackets: [
+            ['{', '}'],
+            ['[', ']'],
+            ['(', ')']
+        ],
+        autoClosingPairs: [
+            { open: '{', close: '}' },
+            { open: '[', close: ']' },
+            { open: '(', close: ')' },
+            { open: '"', close: '"' },
+            { open: "'", close: "'" }
+        ]
+    });
+
+    // Create the Monaco Editor
     editor = monaco.editor.create(monacoContainer, {
         value: '',
         language: 'plaintext',
@@ -91,19 +147,24 @@ function renderFileTree(files, container = fileExplorer, depth = 0) {
         }
 
         const isDir = item.type === 'directory';
-        let iconClass = 'fa-regular fa-file generic-file-color';
+
+        let iconHtml = '';
         if (isDir) {
-            iconClass = 'fa-solid fa-folder';
+            iconHtml = '<i class="tree-icon fa-solid fa-folder"></i>';
         } else if (item.name.endsWith('.js')) {
-            iconClass = 'fa-brands fa-js-square js-color';
+            iconHtml = '<div class="file-icon-badge js">JS</div>';
         } else if (item.name.endsWith('.cs')) {
-            iconClass = 'fa-solid fa-hashtag cs-color';
+            iconHtml = '<div class="file-icon-badge cs">C#</div>';
+        } else if (item.name.endsWith('.spark')) {
+            iconHtml = '<div class="file-icon-badge spark">SP</div>';
+        } else {
+            iconHtml = '<i class="tree-icon fa-regular fa-file generic-file-color"></i>';
         }
 
         // HTML for Tree Item
         treeItem.innerHTML = `
             <div class="tree-item-content" onclick="handleTreeItemClick('${item.path}', ${isDir})">
-                <i class="tree-icon ${iconClass}"></i>
+                ${iconHtml}
                 <span class="tree-item-label" title="${item.name}">${item.name}</span>
             </div>
             <div class="tree-item-actions">
@@ -123,7 +184,7 @@ function renderFileTree(files, container = fileExplorer, depth = 0) {
 
 // Tree click handler
 async function handleTreeItemClick(filePath, isDirectory) {
-    if (isDirectory) return; // For now directories don't collapse/expand visually, they list flat hierarchical
+    if (isDirectory) return;
     await openFile(filePath);
 }
 
@@ -159,6 +220,7 @@ async function openFile(filePath) {
         let language = 'plaintext';
         if (extension === 'js') language = 'javascript';
         else if (extension === 'cs') language = 'csharp';
+        else if (extension === 'spark') language = 'spark';
 
         const model = monaco.editor.createModel(fileCache[filePath], language);
         editor.setModel(model);
@@ -176,16 +238,16 @@ async function openFile(filePath) {
 
 // Update Active CSS class in the sidebar explorer tree
 function updateActiveTreeItemSelection() {
+    // Refresh tree styling on file load
     const items = document.querySelectorAll('.tree-item');
     items.forEach(item => {
         const label = item.querySelector('.tree-item-label');
-        const contentDiv = item.querySelector('.tree-item-content');
-        if (label && contentDiv) {
-            // We can match based on the label/click logic
-            // To make it simple, we re-render tree items which matches correctly
+        if (label && label.getAttribute('title') === activeTab) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
         }
     });
-    // For simplicity, we just trigger refreshWorkspace/re-render when files tree changes or tab switches
 }
 
 // Render tabs bar
@@ -296,7 +358,7 @@ async function saveCurrentFile() {
 // Run Current Code
 async function runCurrentCode() {
     if (!activeTab) {
-        showConsoleLine(`[Koder] Select or open a JS or C# file to execute.`, 'system-line');
+        showConsoleLine(`[Koder] Select or open a JS, C# or Spark file to execute.`, 'system-line');
         return;
     }
 
@@ -362,6 +424,7 @@ function showConsoleLine(text, className = '') {
     consoleOutput.scrollTop = consoleOutput.scrollHeight;
 }
 
+// Clear Console
 function clearConsole() {
     consoleOutput.innerHTML = '';
 }
@@ -385,7 +448,7 @@ function closeModal() {
 
 // Trigger handlers for sidebar explorer actions
 function triggerNewFileCreation() {
-    showModal('Create New File', 'relative/path/to/file.js', '', async (filename) => {
+    showModal('Create New File', 'relative/path/to/file.spark', '', async (filename) => {
         if (!filename.trim()) {
             modalError.textContent = 'Filename cannot be empty.';
             return false;

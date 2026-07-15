@@ -1,0 +1,24 @@
+// Koder Spark Micro App Tutorial & Demo
+// Spark is a lightweight micro app language native to Koder IDE.
+// Press 'Run Code' or Ctrl+Enter to render this micro app!
+
+app "User Engagement Counter"
+author "Perseu"
+
+// Declare and configure variables for the app state
+set counter_value = "42"
+set active_users = "1,024"
+set app_environment = "Production"
+set active_campaign = "Summer Special Promo 2026"
+
+// Print logs to the console stage
+print "Initializing Spark core services..."
+print "Loading dashboard metadata..."
+print "Fetching active users and engagement counters..."
+print "Ready!"
+
+// Render states as beautiful interactive widgets
+show counter_value
+show active_users
+show app_environment
+show active_campaign
