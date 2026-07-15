@@ -68,6 +68,90 @@ function getFileTree(dirPath) {
     });
 }
 
+// Custom Spark Language Interpreter
+function runSparkScript(filePath) {
+    const code = fs.readFileSync(filePath, 'utf8');
+    const lines = code.split(/\r?\n/);
+    let appName = 'Untitled Spark Micro App';
+    let author = 'Anonymous';
+    let variables = {};
+    let stdout = [];
+    let shownVariables = {};
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+
+        // Parse app "Name"
+        if (line.startsWith('app ')) {
+            const match = line.match(/^app\s+["']?([^"']+)["']?$/i);
+            if (match) appName = match[1];
+        }
+        // Parse author "Name"
+        else if (line.startsWith('author ')) {
+            const match = line.match(/^author\s+["']?([^"']+)["']?$/i);
+            if (match) author = match[1];
+        }
+        // Parse set var = val
+        else if (line.startsWith('set ')) {
+            const parts = line.substring(4).split('=');
+            if (parts.length >= 2) {
+                const varName = parts[0].trim();
+                let rawVal = parts.slice(1).join('=').trim();
+                // Strip quotes
+                if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith("'") && rawVal.endsWith("'"))) {
+                    rawVal = rawVal.slice(1, -1);
+                }
+                variables[varName] = rawVal;
+            }
+        }
+        // Parse print "text" or print var
+        else if (line.startsWith('print ')) {
+            let rawVal = line.substring(6).trim();
+            if ((rawVal.startsWith('"') && rawVal.endsWith('"')) || (rawVal.startsWith("'") && rawVal.endsWith("'"))) {
+                stdout.push(rawVal.slice(1, -1));
+            } else if (variables[rawVal] !== undefined) {
+                stdout.push(variables[rawVal]);
+            } else {
+                stdout.push(rawVal);
+            }
+        }
+        // Parse show var
+        else if (line.startsWith('show ')) {
+            const varName = line.substring(5).trim();
+            if (variables[varName] !== undefined) {
+                shownVariables[varName] = variables[varName];
+            }
+        }
+    }
+
+    // Format output
+    let output = `⚡ ================================================== ⚡\n`;
+    output += `   MICRO APP: ${appName.toUpperCase()}\n`;
+    output += `   DEVELOPER: ${author}\n`;
+    output += `⚡ ================================================== ⚡\n\n`;
+    output += `--- [APP STAGE OUTPUT] ---\n`;
+    if (stdout.length > 0) {
+        output += stdout.map(l => ` > ${l}`).join('\n') + '\n';
+    } else {
+        output += ` (No standard output logs)\n`;
+    }
+    output += `\n`;
+    output += `--- [ACTIVE MICRO APP STATE] ---\n`;
+    const shownKeys = Object.keys(shownVariables);
+    if (shownKeys.length > 0) {
+        shownKeys.forEach(k => {
+            output += ` [Rendered Widget] 📦 ${k} : ${shownVariables[k]}\n`;
+        });
+    } else {
+        output += ` (No active micro app widgets rendered)\n`;
+    }
+    output += `\n⚡ ================================================== ⚡\n`;
+    output += `   Execution: Success | Status: Stable / Active`;
+
+    return output;
+}
+
 // --- API ROUTES ---
 
 // 1. Get file tree
@@ -203,6 +287,21 @@ app.post('/api/run', (req, res) => {
             return res.status(404).json({ success: false, error: 'File not found to run' });
         }
 
+        const startTime = Date.now();
+
+        // Check if Spark file
+        if (ext === '.spark') {
+            const output = runSparkScript(filePath);
+            const duration = Date.now() - startTime;
+            return res.json({
+                success: true,
+                stdout: output,
+                stderr: '',
+                exitCode: 0,
+                duration
+            });
+        }
+
         let cmd = '';
         let args = [];
         let cwd = WORKSPACE_DIR;
@@ -211,16 +310,12 @@ app.post('/api/run', (req, res) => {
             cmd = 'node';
             args = [filePath];
         } else if (ext === '.cs') {
-            // For C#, compile and run the project using dotnet run
-            // Since dotnet run works at the project level, it runs program.cs.
-            // If they create multiple C# files or run any .cs, dotnet run compiles all files in the directory.
             cmd = 'dotnet';
             args = ['run', '--project', 'KoderWorkspace.csproj'];
         } else {
-            return res.status(400).json({ success: false, error: 'Unsupported file type. Please run a .js or .cs file.' });
+            return res.status(400).json({ success: false, error: 'Unsupported file type. Please run a .js, .cs, or .spark file.' });
         }
 
-        const startTime = Date.now();
         const runner = spawn(cmd, args, { cwd });
 
         let stdout = '';
